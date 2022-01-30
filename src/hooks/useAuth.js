@@ -1,38 +1,48 @@
-import * as React from "react";
-import axios from "axios";
-const API_URL = `${process.env.REACT_APP_API_URL}/auth`;
-const authContext = React.createContext();
+import { createContext, useContext, useState } from "react";
+import AuthService from "../service/AuthService";
+const authContext = createContext();
 
 function useAuth() {
     const user = JSON.parse(localStorage.getItem('user'))
 
-    const [authed, setAuthed] = React.useState(!!user);
+    const [authed, setAuthed] = useState(!!user);
 
     return {
         authed,
         async login(email, password) {
-            const response = await axios.post(API_URL + "/authenticate", {email,password})
-            if (response.data.token) {
+            try {
+                const response = await AuthService.login(email, password)
                 setAuthed(true);
-                localStorage.setItem("user", JSON.stringify(response.data));
-            } else {
-                return { error: "Something wrong happened."}
+                return response
+            } catch (error) {
+                return error
             }
-            return response;
+            
         },
         async logout() {
-            await localStorage.removeItem("user");
+            AuthService.logout()
             setAuthed(false);
-        }
+        },
+        async register(name, email, password) {
+            try {
+                const response = AuthService.register(name, email, password);
+                setAuthed(true);
+                return response;
+            } catch (error) {
+                return error
+            }
+        },
+        getCurrentUser(){
+            return AuthService.getCurrentUser();
+        },
     };
 }
 
 export function AuthProvider({ children }) {
   const auth = useAuth();
-
   return <authContext.Provider value={auth}>{children}</authContext.Provider>;
 }
 
 export default function AuthConsumer() {
-  return React.useContext(authContext);
+  return useContext(authContext);
 }

@@ -5,12 +5,15 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider } from "./hooks/useAuth";
+import { PlatformProvider } from "./hooks/usePlatform";
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
       <AuthProvider>
-        <App />
+        <PlatformProvider>
+          <App />
+        </PlatformProvider>
       </AuthProvider>
     </Router>
   </React.StrictMode>,

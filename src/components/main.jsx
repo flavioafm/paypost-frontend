@@ -1,45 +1,40 @@
-import React from 'react';
-import { FacebookProvider, Login, Status } from 'react-facebook';
+import React, { useEffect, useState } from 'react';
+import FacebookButton from './facebookButton';
+import Publisher from './publisher';
+import Posts from './posts';
+import TwitterButton from './twitterButton';
 
-function Main() {
+const Main = () => {
 
-    const handleResponse = (data) => {
-        console.log(data);
-    }
-    
-    const handleError = (error) => {
-        this.setState({ error });
+    const [openNewPostModal, setOpenPostModalModal] = useState(false);
+    const handleNewPostCreated = async () => {
+        setOpenPostModalModal(false);
     }
 
-    const handleChange = (response) => {
-        console.log(response);
-    }
-    
     return (
-        <div className="flex-1 p-10 text-2xl font-bold">
-            
-            <FacebookProvider appId="594843451607659">
-                <Login
-                    scope="email"
-                    onCompleted={handleResponse}
-                    onError={handleError}
-                    >
-                    {({ loading, handleClick, error, data }) => (
-                        <span onClick={handleClick}>
-                        Login via Facebook
-                        {loading && (
-                            <span>Loading...</span>
-                        )}
-                        </span>
-                    )}
-                </Login>
-                {/* <Status>
-                {({ loading, status }) => (
-                    <div>{'...'}</div>
-                )}
-                </Status> */}
-            </FacebookProvider>
-            
+        <div>
+            <div className="flex-1 p-10">
+                <p>Social Platforms</p>
+                <div className="flex flex-row">
+                    <div className="text-2xl font-bold z-0">
+                        <FacebookButton/>
+                    </div>
+                    <div className="text-2xl font-bold z-0">
+                        <TwitterButton/>
+                    </div>
+                </div>
+                <div className="w-full flex justify-center mt-5">
+                    <button className="bg-blue-600 hover:bg-blue-500 rounded-full w-1/3 h-16 text-white" onClick={() => setOpenPostModalModal(true)} >New Post</button>
+                </div>
+            </div>
+            <div>
+                <Posts/>
+            </div>
+            <Publisher 
+                open={openNewPostModal} 
+                callbackCancel={() => {setOpenPostModalModal(false)}} 
+                callbackNewPost={() => {handleNewPostCreated()}}
+            />
         </div>
     );
 }

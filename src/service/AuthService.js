@@ -1,20 +1,16 @@
 import axios from "axios";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/auth/`;
+const API_URL = `${process.env.REACT_APP_API_URL}/auth`;
 console.log('API_URL:', API_URL);
 class AuthService {
     async login(email, password) {
         return await axios
-        .post(API_URL + "authenticate", {
-            email,
-            password
-        })
+        .post(API_URL + "/authenticate", { email, password })
         .then(response => {
             if (response.data.token) {
                 localStorage.setItem("user", JSON.stringify(response.data));
             }
-
-            return response;
+            return response.data;
         })
         .catch(err =>{
             return err.response;
@@ -27,20 +23,16 @@ class AuthService {
 
     async register(name, email, password) {
         return await axios
-        .post(API_URL + "register", {
-            name,
-            email,
-            password
-        })
-        .then(response => {
-            if (response.data.token) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-            }
-            return response;
-        })
-        .catch(err =>{
-            return err.response;
-        });
+            .post(API_URL + "register", { name, email, password })
+            .then(response => {
+                if (response.data.token) {
+                    localStorage.setItem("user", JSON.stringify(response.data));
+                }
+                return response.data;
+            })
+            .catch(err =>{
+                return err.response;
+            });
     }
 
     getCurrentUser(){
@@ -50,6 +42,14 @@ class AuthService {
     isAuthenticated() {
         const user = this.getCurrentUser();
         return user;
+    }
+
+    updateUserPlatformData(platform, newData) {
+        const user = this.getCurrentUser();
+        user[platform] = {
+            ...newData
+        }
+        localStorage.setItem("user", JSON.stringify(user));
     }
 }
 
