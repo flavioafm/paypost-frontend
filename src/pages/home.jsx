@@ -6,9 +6,9 @@ function Home() {
 
     return (
         <div className="relative min-h-screen md:flex">
-            <Sidebar/>
+            <Sidebar highlighted='Home'/>
             <Main/>
-      </div>
+        </div>
     );
 }
 

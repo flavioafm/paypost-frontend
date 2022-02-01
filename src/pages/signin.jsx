@@ -37,7 +37,7 @@ const Login = (props) => {
         <div className="
             w-screen
             h-screen
-            bg-[url(https://images8.alphacoders.com/470/thumb-1920-470318.jpg)]
+            bg-[url(https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1748&q=80)]
             bg-cover
             bg-center
             flex
@@ -46,11 +46,9 @@ const Login = (props) => {
             <div className="container mx-auto">
             <div className="max-w-md p-5 mx-auto backdrop-blur-lg rounded-md shadow-2xl animate-fade-in-down">
                 <div className="text-center mb-6">
-                    <img src="https://eyeratebusiness.com/static/eyerate-full.png" alt="#" />
+                    <img src="https://res.cloudinary.com/flavioafm/image/upload/v1643750381/paypost/eyerate-full_okjuwi.png" alt="#" />
                 </div>
                 <div>
-                {/* <form> */}
-                    {/* <input name="csrfToken" type="hidden" defaultValue={csrfToken} /> */}
                     <div className="mb-6">
                     <label className="block mb-2 text-sm text-gray-300">Email Address</label>
                     <input
@@ -86,7 +84,6 @@ const Login = (props) => {
                         <label className="text-sm w-1/3 text-gray-300"><a href="/signup" className="underline">Sign up here...</a></label> 
                         <label className="text-sm w-2/3 text-right text-yellow-400">{error}</label> 
                     </div>
-                {/* </form> */}
                 </div>
             </div>
             </div>

@@ -23,7 +23,7 @@ class AuthService {
 
     async register(name, email, password) {
         return await axios
-            .post(API_URL + "register", { name, email, password })
+            .post(API_URL + "/register", { name, email, password })
             .then(response => {
                 if (response.data.token) {
                     localStorage.setItem("user", JSON.stringify(response.data));
@@ -44,12 +44,8 @@ class AuthService {
         return user;
     }
 
-    updateUserPlatformData(platform, newData) {
-        const user = this.getCurrentUser();
-        user[platform] = {
-            ...newData
-        }
-        localStorage.setItem("user", JSON.stringify(user));
+    updateUserPlatformData(newData) {
+        localStorage.setItem("user", JSON.stringify(newData));
     }
 }
 

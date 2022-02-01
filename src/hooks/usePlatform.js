@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import AuthService from "../service/AuthService";
 const platformContext = createContext();
 
@@ -8,7 +8,22 @@ const API_URL = `${process.env.REACT_APP_API_URL}/api/`;
 function usePlatform() {
 
     const [posts, setPosts] = useState([]);
+    const [summary, setSummary] = useState({
+        likes: 0,
+        responses: 0,
+        shares: 0,
+        views: 0,
+        earned: '$ 0.00',
+    });
     const [userDataPlataform, setUserDataPlataform] = useState(null);
+
+    useEffect(() => {
+        const loadCurrentUser = async() => {
+            setUserDataPlataform(await AuthService.getCurrentUser())
+        }
+        loadCurrentUser();
+    }, []);
+    
 
     const getRequest = async () => {
         const token = await AuthService.getCurrentUser().token;
@@ -21,13 +36,29 @@ function usePlatform() {
         });
     }
 
+    const calcSummary = (data) => {
+        const formatter = new Intl.NumberFormat('en-US', {style: 'currency',currency: 'USD'});
+        const summary = data.reduce(function(previousValue, currentValue) {
+            return {
+              likes: previousValue.likes + currentValue.likes,
+              responses: previousValue.responses + currentValue.responses,
+              shares: previousValue.shares + currentValue.shares,
+              views: previousValue.views + currentValue.views,
+              earned: previousValue.earned + currentValue.earned,
+            }
+        });
+        summary.earned = formatter.format(summary.earned)
+        return summary;
+    }
+
     const refreshPosts = async () => {
         const request = await getRequest();
-        const user = await AuthService.getCurrentUser().user;
+        const user = await AuthService.getCurrentUser();
         await request
             .get("/platform/post", { params: { userId: user._id } })
             .then(response => {
                 setPosts(response.data);
+                setSummary(calcSummary(response.data))
             })
             .catch(err =>{
                 return err;
@@ -37,17 +68,19 @@ function usePlatform() {
     return {
         async signIn(platform, userData){
             const request = await getRequest();
-            const user = await AuthService.getCurrentUser().user;
+            const user = await AuthService.getCurrentUser();
             return await request
                 .post("/platform/signin", {userId: user._id, platformId: platform, userData})
                 .then(response => {
-                    setUserDataPlataform({
+                    const newDataUser = {
                         ...userDataPlataform,
+                        ...user,
                         ...response.data
+                    }
+                    setUserDataPlataform({
+                        ...newDataUser
                     });
-                    AuthService.updateUserPlatformData(
-                        platform.toLowerCase(), userData || response.data
-                    );
+                    AuthService.updateUserPlatformData(newDataUser);
                     return response.data;
                 })
                 .catch(err =>{
@@ -55,13 +88,14 @@ function usePlatform() {
                 });
         },
 
-        async getCurrentUserByPlatform(platform){
-            return await AuthService.getCurrentUser().user[platform];
+        async refreshUserData(){
+            const user = await AuthService.getCurrentUser();
+            return setUserDataPlataform(user);
         },
 
         async newPost(platform, postData){
             const request = await getRequest();
-            const user = await AuthService.getCurrentUser().user;
+            const user = await AuthService.getCurrentUser();
             return await request
                 .post("/platform/post", {userId: user._id, platformId: platform, postData})
                 .then(response => {
@@ -79,7 +113,7 @@ function usePlatform() {
         
         async signInCallback(platform, oauthVerifier) {
             const request = await getRequest();
-            const user = await AuthService.getCurrentUser().user;
+            const user = await AuthService.getCurrentUser();
             return await request
                 .get("/platform/signin_callback", { 
                     params: {
@@ -89,13 +123,29 @@ function usePlatform() {
                     }
                 })
                 .then(response => {
-                    setUserDataPlataform({
+                    const newDataUser = {
                         ...userDataPlataform,
+                        ...user,
                         ...response.data
+                    }
+                    setUserDataPlataform({
+                        ...newDataUser
                     });
-                    // AuthService.updateUserPlatformData(
-                    //     platform.toLowerCase(), userData || response.data
-                    // );
+                    AuthService.updateUserPlatformData(newDataUser);
+                    return response.data;
+                })
+                .catch(err =>{
+                    return err;
+                });
+        },
+        async getMedias(){  
+            const request = await getRequest();
+            const user = await AuthService.getCurrentUser();
+            return await request
+                .get("/platform/media", { 
+                    params: { userId: user._id }
+                })
+                .then(response => {
                     return response.data;
                 })
                 .catch(err =>{
@@ -103,6 +153,7 @@ function usePlatform() {
                 });
         },
         posts,
+        summary,
         userDataPlataform
     }
 }

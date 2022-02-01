@@ -3,30 +3,57 @@ import FacebookButton from './facebookButton';
 import Publisher from './publisher';
 import Posts from './posts';
 import TwitterButton from './twitterButton';
+import SummaryItem from './summaryItem';
+import usePlatform from '../hooks/usePlatform';
 
 const Main = () => {
 
+    const { userDataPlataform } = usePlatform();
     const [openNewPostModal, setOpenPostModalModal] = useState(false);
+    const [postDisabled, setPostDisabled] = useState(true);
     const handleNewPostCreated = async () => {
         setOpenPostModalModal(false);
     }
 
+    useEffect(() => {
+        setPostDisabled(!(userDataPlataform?.facebook || userDataPlataform?.twitter))
+    }, [userDataPlataform]);
+    
+
     return (
-        <div>
-            <div className="flex-1 p-10">
-                <p>Social Platforms</p>
-                <div className="flex flex-row">
-                    <div className="text-2xl font-bold z-0">
+        <div className="w-full">
+            <div className="flex-1 p-5">
+                <div className="bg-gray-100 p-2 pb-3 rounded-md">
+                    <p className="text-gray-500 pl-2">Social Platforms</p>
+                    <div className="flex flex-wrap items-stretch">
                         <FacebookButton/>
-                    </div>
-                    <div className="text-2xl font-bold z-0">
                         <TwitterButton/>
                     </div>
                 </div>
-                <div className="w-full flex justify-center mt-5">
-                    <button className="bg-blue-600 hover:bg-blue-500 rounded-full w-1/3 h-16 text-white" onClick={() => setOpenPostModalModal(true)} >New Post</button>
+            </div>
+            <div className="w-full">
+                <div className="flex-1 p-2.5">
+                    <div className="flex flex-wrap items-stretch">
+                        <div className="w-full p-2.5 sm:w-3/6 lg:w-2/6">
+                            <div className="">
+                                <button
+                                    disabled={postDisabled}
+                                    className={`w-full h-20 rounded-md text-2xl text-white ${postDisabled ? 'bg-gray-400' : 'bg-gradient-to-r from-green-400 to-blue-500 hover:bg-opacity-80'}`} 
+                                    onClick={() => setOpenPostModalModal(true)} 
+                                >
+                                    New Post
+                                </button>
+                            </div>
+                        </div>
+                        <SummaryItem summaryItem='Likes'/>
+                        <SummaryItem summaryItem='Responses'/>
+                        <SummaryItem summaryItem='Shares'/>
+                        <SummaryItem summaryItem='Views'/>
+                        <SummaryItem summaryItem='Earned'/>
+                    </div>
                 </div>
             </div>
+            
             <div>
                 <Posts/>
             </div>
