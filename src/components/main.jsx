@@ -21,7 +21,7 @@ const Main = () => {
     
 
     return (
-        <div className="w-full">
+        <div className="w-full overflow-auto">
             <div className="flex-1 p-5">
                 <div className="bg-gray-100 p-2 pb-3 rounded-md">
                     <p className="text-gray-500 pl-2">Social Platforms</p>
